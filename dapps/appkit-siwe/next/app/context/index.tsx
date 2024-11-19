@@ -32,8 +32,9 @@ export default function AppKitProvider({
   children: ReactNode;
   initialState?: State;
 }) {
+  const config = wagmiAdapter.wagmiConfig as any
   return (
-    <WagmiProvider config={wagmiAdapter.wagmiConfig} initialState={initialState}>
+    <WagmiProvider config={config} initialState={initialState}>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </WagmiProvider>
   );

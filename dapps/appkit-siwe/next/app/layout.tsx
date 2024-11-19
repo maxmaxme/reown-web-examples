@@ -12,7 +12,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const initialState = cookieToInitialState(wagmiAdapter.wagmiConfig, headers().get('cookie'));
+  const initialState = cookieToInitialState(wagmiAdapter.wagmiConfig as any, headers().get('cookie'));
   return (
     <html lang='en'>
       <body>
