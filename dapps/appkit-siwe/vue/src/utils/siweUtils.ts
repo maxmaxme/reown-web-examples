@@ -61,7 +61,7 @@ const normalizeAddress = (address: string): string => {
     return data as { address: string, chainId: number };
 }
 
-export const createSIWE = (chains: [AppKitNetwork, ...AppKitNetwork[]]) => {
+export const createSIWE = (chains: [AppKitNetwork, ...AppKitNetwork[]], callback: () => void) => {
     return createSIWEConfig({
       signOutOnAccountChange: true,
       signOutOnNetworkChange: true,
@@ -81,6 +81,7 @@ export const createSIWE = (chains: [AppKitNetwork, ...AppKitNetwork[]]) => {
           const response = await verifyMessage({ message, signature }).catch(() => undefined);
           if (response) {
             session = { address: response.address, chainId: response.chainId };
+            callback()
             return true
           }
           return false

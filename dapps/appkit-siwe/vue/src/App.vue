@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import { createAppKit } from '@reown/appkit/vue'
+import {createAppKit, useAppKit, useAppKitAccount} from '@reown/appkit/vue'
 import { arbitrum, mainnet, type AppKitNetwork } from '@reown/appkit/networks'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 
 import { createSIWE  } from './utils/siweUtils'
+import {ref} from "vue";
 
 // 1. Get projectId at https://cloud.reown.com
 const projectId = import.meta.env.VITE_PROJECT_ID;
@@ -27,8 +28,12 @@ const wagmiAdapter = new WagmiAdapter({
   ssr: true
 });
 
+const log = ref<string[]>([]);
+
 // 5. Create a SIWE configuration object
-const siweConfig = createSIWE(chains);
+const siweConfig = createSIWE(chains, () => {
+  log.value = [...log.value, 'Connected to SIWE at ' + new Date().toLocaleTimeString()];
+});
 
 
 // 6. Create modal
@@ -44,10 +49,14 @@ const modal = createAppKit({
     emailShowWallets: true, // default to true
   }
 });
+
+const account = useAppKitAccount()
 </script>
 
 <template>
   <div>
     <button @click="modal.open">Open Modal</button>
+    <div>Account Status: {{ account.status }}</div>
+    <div v-for="l in log" :key="l">{{ l }}</div>
   </div>
 </template>
