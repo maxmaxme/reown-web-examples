@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import {createAppKit, useAppKit, useAppKitAccount} from '@reown/appkit/vue'
-import { arbitrum, mainnet, type AppKitNetwork } from '@reown/appkit/networks'
+import {createAppKit, useAppKitAccount} from '@reown/appkit/vue'
+import { arbitrum, mainnet, polygon, base, scroll, type AppKitNetwork } from '@reown/appkit/networks'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 
 import { createSIWE  } from './utils/siweUtils'
-import {ref} from "vue";
+import {onBeforeMount, onMounted, ref} from "vue";
 
 // 1. Get projectId at https://cloud.reown.com
 const projectId = import.meta.env.VITE_PROJECT_ID;
@@ -19,35 +19,34 @@ const metadata = {
 };
 
 // 3. Set the networks
-const chains: [AppKitNetwork, ...AppKitNetwork[]] = [mainnet, arbitrum];
-
-// 4. Create Wagmi Adapter
-const wagmiAdapter = new WagmiAdapter({
-  networks: chains,
-  projectId,
-  ssr: true
-});
+const networks: [AppKitNetwork, ...AppKitNetwork[]] = [mainnet, arbitrum, base, scroll, polygon]
 
 const log = ref<string[]>([]);
 
+const message = 'Sign in to continue';
+
 // 5. Create a SIWE configuration object
-const siweConfig = createSIWE(chains, () => {
+const siweConfig = createSIWE(networks, message, () => {
   log.value = [...log.value, 'Connected to SIWE at ' + new Date().toLocaleTimeString()];
 });
 
 
 // 6. Create modal
 const modal = createAppKit({
-  adapters: [wagmiAdapter],
-  networks: chains,
-  projectId,
-  siweConfig,
-  metadata,
   features: {
-    email: true, // default to true
-    socials: ['google', 'x', 'github', 'discord', 'apple', 'facebook', 'farcaster'],
-    emailShowWallets: true, // default to true
-  }
+    socials: [],
+    email: false,
+    analytics: false,
+  },
+  adapters: [
+    new WagmiAdapter({
+      projectId: projectId,
+      networks,
+    }),
+  ],
+  networks: networks,
+  projectId: projectId,
+  siweConfig,
 });
 
 const account = useAppKitAccount()

@@ -61,15 +61,13 @@ const normalizeAddress = (address: string): string => {
     return data as { address: string, chainId: number };
 }
 
-export const createSIWE = (chains: [AppKitNetwork, ...AppKitNetwork[]], callback: () => void) => {
+export const createSIWE = (chains: [AppKitNetwork, ...AppKitNetwork[]], message: string, callback: () => void) => {
     return createSIWEConfig({
-      signOutOnAccountChange: true,
-      signOutOnNetworkChange: true,
         getMessageParams: async () => ({
               domain: window.location.host,
               uri: window.location.origin,
               chains: chains.map((chain: AppKitNetwork) => parseInt(chain.id.toString())),
-              statement: 'Welcome to the dApp!\nPlease sign this message',
+              statement: message,
             }),
         createMessage: ({ address, ...args }: SIWECreateMessageArgs) => {
           // normalize the address in case you are not using our library in the backend
